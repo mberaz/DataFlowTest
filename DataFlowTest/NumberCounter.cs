@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Xml.Linq;
@@ -19,6 +21,7 @@ namespace DataFlowTest
 
         private void PrintNumberFunc (int num)
         {
+            Thread.Sleep(2000);
             Console.WriteLine($"A number : {num}");
         }
         public void Exec ()
@@ -31,6 +34,7 @@ namespace DataFlowTest
             var printNumber = new ActionBlock<int>(number => PrintNumberFunc(number));
             var printSecondFormat = new ActionBlock<int>(number =>
             {
+                Thread.Sleep(2000);
                 if(number == 4 || number == 5)
                 {
                     throw new Exception("new error");
@@ -58,7 +62,7 @@ namespace DataFlowTest
 
             createNumbers.Completion.ContinueWith(t => broadcast.Complete());
             broadcast.Completion.ContinueWith(t => printNumber.Complete());
-            //createNumbers.Completion.ContinueWith(t => printSecondFormat.Complete());
+            createNumbers.Completion.ContinueWith(t => printSecondFormat.Complete());
             createNumbers.Completion.ContinueWith(t =>
             {
                 if(t.IsFaulted)
@@ -67,8 +71,10 @@ namespace DataFlowTest
                 }
                 else printSecondFormat.Complete();
             });
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
-            createNumbers.Post(10);
+            createNumbers.Post(1);
 
             try
             {
@@ -76,6 +82,10 @@ namespace DataFlowTest
 
                 printSecondFormat.Completion.Wait();
                 printNumber.Completion.Wait();
+
+                sw.Stop();
+
+                Console.WriteLine("time "+sw.Elapsed.TotalSeconds);
             }
             catch(AggregateException ex)
             {

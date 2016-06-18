@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extentions.cs" />
+    <Compile Include="Joiner.cs" />
     <Compile Include="NumberCounter.cs" />
     <Compile Include="PeopleHandler.cs" />
     <Compile Include="Program.cs" />
