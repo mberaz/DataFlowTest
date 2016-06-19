@@ -17,8 +17,11 @@ namespace DataFlowTest
             //peopleHandler.Handle();
 
 
-            var NumberCounter = new NumberCounter();
-            NumberCounter.Exec();
+            //var NumberCounter = new NumberCounter();
+            //NumberCounter.Exec();
+
+            var TaskJoiner = new TaskJoiner();
+            TaskJoiner.Exec();
         }
     }
 }
